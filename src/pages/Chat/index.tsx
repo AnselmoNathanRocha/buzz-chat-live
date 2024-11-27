@@ -88,7 +88,8 @@ export function Chat() {
 
     useEffect(() => {
         if (user) {
-            const API_SOCKET_BASE_URL = 'ws://localhost:5000/';
+            // const API_SOCKET_BASE_URL = 'ws://localhost:5000/';
+            const API_SOCKET_BASE_URL = 'wss://total-track-52852a7cf2b1.herokuapp.com/';
             const ws = new WebSocket(`${API_SOCKET_BASE_URL}`, [String(user.id)]);
 
             ws.onopen = () => {
