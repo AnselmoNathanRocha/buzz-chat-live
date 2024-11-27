@@ -1,4 +1,4 @@
-import { styled } from "styled-components";
+import styled, { css } from 'styled-components';
 
 export const Container = styled.div`
   display: flex;
@@ -46,17 +46,31 @@ export const MessagesContainer = styled.div`
 `;
 
 export const Message = styled.div<{ $isSent: boolean }>`
-  margin: 5px 0;
-  padding: 10px;
-  border-radius: 4px;
-  background-color: ${({ $isSent }) => ($isSent ? "#dcf8c6" : "#f1f0f0")};
+  max-width: 70%;
+  margin: 10px 0;
+  padding: 10px 15px;
+  border-radius: 15px;
+  font-size: 14px;
+  line-height: 1.5;
+  background-color: ${({ $isSent, theme }) =>
+    $isSent ? theme.colors.primary : theme.colors.secondary};
+  color: ${({ $isSent, theme }) =>
+    $isSent ? theme.colors.white : theme.colors.text};
   align-self: ${({ $isSent }) => ($isSent ? "flex-end" : "flex-start")};
-  max-width: 80%;
-  width: fit-content;
+
+  ${({ $isSent }) =>
+    $isSent
+      ? css`
+          border-top-right-radius: 0;
+        `
+      : css`
+          border-top-left-radius: 0;
+        `}
 `;
 
-export const InputContainer = styled.form`
+export const InputContainer = styled.div`
   display: flex;
+  width: 100%;
 `;
 
 export const Input = styled.input`

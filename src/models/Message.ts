@@ -1,11 +1,12 @@
 export interface PostMessage {
-    text: string;
-    isSent: boolean;
-  }
-  
-  export interface GetMessage {
-    id: number;
-    text: string;
-    isSent: boolean;
-  }
-  
+  receiverId: number;
+  message: string;
+}
+
+export interface GetMessage {
+  id: number;
+  senderId: number;
+  receiverId: number;
+  message: string;
+  sentAt: string;
+}

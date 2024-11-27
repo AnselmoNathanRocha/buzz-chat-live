@@ -5,6 +5,7 @@ import { Home } from "./pages/Home";
 import { Contacts } from "./pages/Contacts";
 import { AddContact } from "./pages/AddContact";
 import { Chat } from "./pages/Chat";
+import { Teste } from "./pages/Teste";
 
 export const authRoutes = createBrowserRouter([
   {
@@ -18,6 +19,10 @@ export const authRoutes = createBrowserRouter([
   {
     path: "/signup",
     element: <Signup />,
+  },
+  {
+    path: "/teste",
+    element: <Teste />,
   }
 ]);
 
@@ -42,4 +47,8 @@ export const appRoutes = createBrowserRouter([
     path: "/chat/:contactId",
     element: <Chat />,
   },
+  {
+    path: "/teste",
+    element: <Teste />,
+  }
 ]);

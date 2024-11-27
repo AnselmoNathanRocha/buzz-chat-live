@@ -10,10 +10,24 @@ import { Loader, LoaderContainer } from '@/components/Loader';
 import { theme } from '@/styles/theme';
 import { EmptyMessage } from '@/styles/GlobalStyles';
 import { HiOutlineEmojiSad } from "react-icons/hi";
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Input } from '@/components/Forms/Input';
+import { FormRoot } from '@/components/Forms/FormRoot';
+
+const homeSchema = z.object({
+    search: z.string().optional(),
+});
+
+type SearchData = z.infer<typeof homeSchema>;
 
 export function Home() {
+    const form = useForm<SearchData>({
+        resolver: zodResolver(homeSchema),
+    });
+    const search = form.watch("search");
     const [loading, setLoading] = useState<boolean>(true);
-    const [searchQuery, setSearchQuery] = useState<string>('');
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const [conversations, setConversations] = useState<GetChat[]>([]);
     const navigate = useNavigate();
@@ -35,7 +49,7 @@ export function Home() {
 
     const filteredConversations = Array.isArray(conversations)
         ? conversations.filter(conversation =>
-            conversation.name.toLowerCase().includes(searchQuery.toLowerCase())
+            conversation.nameContact.toLowerCase().includes(search!.toLowerCase())
         )
         : [];
 
@@ -47,13 +61,9 @@ export function Home() {
             </MenuButton>
             {menuOpen && <OptionsMenu onClose={() => setMenuOpen(false)} isOpen={menuOpen} />}
             <SearchGroup>
-                <FaSearch />
-                <input
-                    type="text"
-                    placeholder="Pesquisar conversas..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                />
+                <FormRoot form={form}>
+                    <Input type='text' name='search' placeholder='Pesquisar conversas...' leftIcon={<FaSearch />} />
+                </FormRoot>
             </SearchGroup>
             <Button onClick={() => navigate("/contacts")}>
                 <FaComments style={{ marginRight: '8px' }} />
@@ -73,14 +83,11 @@ export function Home() {
                         </EmptyMessage>
                         :
                         <ConversationsList>
-                            {filteredConversations.map(conversation => (
+                            {filteredConversations.map((conversation, index) => (
                                 <ConversationItem
-                                    key={conversation.id}
-                                    image={conversation.image}
-                                    name={conversation.name}
-                                    lastMessage={conversation.lastMessage}
-                                    isRead={conversation.isRead}
-                                    onClick={() => navigate(`/chat/${conversation.id}`)}
+                                    key={`${conversation.id}-${index}`}
+                                    conversation={conversation}
+                                    onClick={() => navigate(`/chat/${conversation.receiverId}`)}
                                 />
                             ))}
                         </ConversationsList>

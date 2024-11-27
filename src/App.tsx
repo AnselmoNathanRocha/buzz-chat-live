@@ -5,6 +5,7 @@ import utc from "dayjs/plugin/utc";
 import { RouterProvider } from "react-router-dom";
 import { appRoutes, authRoutes } from "./routes";
 import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { ContainerApp, GlobalStyles } from "./styles/GlobalStyles";
 import { AppProvider } from "./context";
 

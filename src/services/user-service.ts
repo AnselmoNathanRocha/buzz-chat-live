@@ -2,13 +2,13 @@ import { httpClient } from "./http-client";
 import { GetUser, PostLogin, PostUser } from "@/models/User";
 
 class UserService {
-  async get(): Promise<GetUser[]> {
-    const response = await httpClient.get("/users");
+  async get(): Promise<GetUser> {
+    const response = await httpClient.get("/user");
     return response.data;
   }
 
   async create(data: PostUser) {
-    const response = await httpClient.post("/users", data);
+    const response = await httpClient.post("/user", data);
     return response.data;
   }
 

@@ -40,18 +40,10 @@ export function Contacts() {
     }, [token]);
 
     const filteredContacts = contacts.filter(contact =>
-        contact.name.toLowerCase().includes(searchQuery.toLowerCase())
+        contact.nameContact.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     const isMultipleSelected = selectedContacts.length > 1;
-
-    const handleSelectContact = (id: number) => {
-        setSelectedContacts(prev =>
-            prev.includes(id) ? prev.filter(contactId => contactId !== id) : [...prev, id]
-        );
-
-        navigate(`/chat/${id}`);
-    };
 
     return (
         <Container>
@@ -88,12 +80,8 @@ export function Contacts() {
                             {filteredContacts.map((contact, index) => (
                                 <ConversationItem
                                     key={`${contact.id}-${index}`}
-                                    image={contact.image}
-                                    name={contact.name}
-                                    lastMessage=""
-                                    isRead={false}
-                                    onClick={() => handleSelectContact(contact.id)}
-                                    selected={selectedContacts.includes(contact.id)}
+                                    conversation={contact}
+                                    onClick={() => navigate(`/chat/${contact.idUser}`)}
                                 />
                             ))}
                         </ConversationsList>

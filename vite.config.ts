@@ -16,5 +16,11 @@ export default defineConfig({
   server: {
     open: true,
   },
+  optimizeDeps: {
+    include: ['stompjs'],
+  },
+  define: {
+    global: {},
+  },
 });
 

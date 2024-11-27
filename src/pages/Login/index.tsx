@@ -2,40 +2,46 @@
 import { useState } from 'react';
 import { FaEnvelope, FaLock } from 'react-icons/fa';
 import { Loader } from '@/components/Loader';
-import { Button, Container, ErroMessage, Form, InputGroup, LinkCustom, TextLink, Title } from '@/styles/GlobalStyles';
+import { Button, Container, FormBox, LinkCustom, TextLink, Title } from '@/styles/GlobalStyles';
 import { userService } from '@/services/user-service';
 import { useAuth } from '@/context/auth';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from '@/components/Forms/Input';
+import { FormRoot } from '@/components/Forms/FormRoot';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { InputPass } from '@/components/Forms/InputPass';
+
+const loginSchema = z.object({
+    email: z.string().email("Email inválido"),
+    password: z.string().min(8, "Senha deve ter no mínimo 8 caracteres"),
+});
+
+type LoginData = z.infer<typeof loginSchema>;
 
 export function Login() {
-    const [formData, setFormData] = useState({ email: '', password: '' });
-    const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const form = useForm<LoginData>({
+        resolver: zodResolver(loginSchema),
+    });
     const { login } = useAuth();
 
-    const handleChange = (e: any) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
-
-    const handleSubmit = async (e: any) => {
-        e.preventDefault();
-        setErrorMessage('');
-        setLoading(true);
-
+    const onSubmit = async (data: LoginData) => {
         try {
-            const response = await userService.authentication(formData);
-            const { token, expiresIn } = response.data;
+            setLoading(true);
+            const response = await userService.authentication(data);
+            const { token, expiresAt } = response.data;
 
-            login(token, expiresIn);
+            login(token, expiresAt);
         } catch (error: any) {
             if (error.response) {
                 if (error.response.data.error === 'Token expirado') {
-                    setErrorMessage('Sua sessão expirou. Por favor, faça login novamente.');
+                    console.error('Sua sessão expirou. Por favor, faça login novamente.');
                 } else {
-                    setErrorMessage(error.response.data.error || 'Erro ao fazer login');
+                    console.error(error.response.data.error || 'Erro ao fazer login');
                 }
             } else {
-                setErrorMessage('Erro ao conectar com o servidor');
+                console.error('Erro ao conectar com o servidor');
             }
         } finally {
             setLoading(false);
@@ -44,40 +50,19 @@ export function Login() {
 
     return (
         <Container>
-            <Form onSubmit={handleSubmit}>
+            <FormBox>
                 <Title>Login de Usuário</Title>
-                <InputGroup>
-                    <FaEnvelope />
-                    <input
-                        type="email"
-                        name="email"
-                        required
-                        value={formData.email}
-                        onChange={handleChange}
-                        placeholder=" "
-                    />
-                    <label>Email</label>
-                </InputGroup>
-                <InputGroup>
-                    <FaLock />
-                    <input
-                        type="password"
-                        name="password"
-                        required
-                        value={formData.password}
-                        onChange={handleChange}
-                        placeholder=" "
-                    />
-                    <label>Senha</label>
-                </InputGroup>
+                <FormRoot form={form} onSubmit={form.handleSubmit(onSubmit)}>
+                    <Input floatingLabel='Email' name='email' leftIcon={<FaEnvelope />} />
 
-                <ErroMessage>{errorMessage}</ErroMessage>
+                    <InputPass floatingLabel='Senha' name='password' leftIcon={<FaLock />} />
 
-                <Button type="submit">{loading ? <Loader size={28} /> : "Entrar"}</Button>
+                    <Button type="submit">{loading ? <Loader size={28} /> : "Entrar"}</Button>
+                </FormRoot>
                 <TextLink>
                     Não tem uma conta? <LinkCustom to="/signup">Cadastre-se</LinkCustom>
                 </TextLink>
-            </Form>
+            </FormBox>
         </Container>
     );
 }

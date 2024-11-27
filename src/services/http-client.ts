@@ -1,9 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = 
-"http://localhost:3001/"
-// "https://buzz-chat-f70b79635e3e.herokuapp.com/"
-;
+const API_BASE_URL = "http://localhost:5000/";
 
 export const httpClient = axios.create({
   baseURL: API_BASE_URL,
@@ -11,7 +8,7 @@ export const httpClient = axios.create({
 
 httpClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("authToken")
+    const token = localStorage.getItem("authToken");
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -21,5 +18,5 @@ httpClient.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  },
+  }
 );

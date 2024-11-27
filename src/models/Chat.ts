@@ -8,8 +8,12 @@ export interface PostChat {
 
 export interface GetChat {
   id: number;
-  name: string;
+  idUser: number;
+  receiverId: number;
+  nameContact: string;
+  namphoneeContact: string;
+  photoUser: string;
   lastMessage: string;
-  image: string;
-  isRead: boolean;
+  createdAt: string;
+  updatedAt: boolean;
 }

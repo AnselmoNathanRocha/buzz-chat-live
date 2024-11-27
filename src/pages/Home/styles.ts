@@ -59,6 +59,7 @@ export const ConversationsList = styled.ul`
     padding: 0;
     margin-top: 20px;
     width: 100%;
+    overflow: hidden;
 `;
 
 export const MenuButton = styled.button`

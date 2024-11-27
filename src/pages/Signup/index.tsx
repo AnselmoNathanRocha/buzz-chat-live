@@ -1,114 +1,96 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { FaUser, FaPhone, FaCalendarAlt, FaEnvelope, FaLock } from 'react-icons/fa';
-import { Button, Container, Form, InputGroup, LinkCustom, TextLink, Title } from '@/styles/GlobalStyles';
+import { Button, Container, FormBox, LinkCustom, TextLink, Title } from '@/styles/GlobalStyles';
 import { userService } from '@/services/user-service';
 import { Loader } from '@/components/Loader';
+import { useAuth } from '@/context/auth';
+import { FormRoot } from '@/components/Forms/FormRoot';
+import { z } from 'zod';
+import { zodDateSchema } from '@/utils/zod-utils';
+import { keepOnlyNumbers } from '@/utils';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Input } from '@/components/Forms/Input';
+import { InputPass } from '@/components/Forms/InputPass';
+import dayjs from 'dayjs';
 
-export function Signup() {
-    const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({
-        name: '',
-        phone: '',
-        dateOfBirth: '',
-        email: '',
-        password: '',
+const signupSchema = z
+    .object({
+        name: z.string().min(5, "Nome precisa ter no mínimo 5 caracteres"),
+        phone: z.string().min(15, "Telefone inválido").transform(keepOnlyNumbers),
+        dateOfBirth: zodDateSchema("YYYY-MM-DD"),
+        email: z.string().email("Email inválido"),
+        password: z.string().min(8, "Senha deve ter no mínimo 8 caracteres"),
+        confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        path: ["confirmPassword"],
+        message: "A senha e confirmação não conferem",
     });
 
-    const handleChange = (e: any) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
+type SignupData = z.infer<typeof signupSchema>;
 
-    const handleSubmit = async (e: any) => {
-        e.preventDefault();
-        setLoading(true);
+export function Signup() {
+    const form = useForm<SignupData>({
+        resolver: zodResolver(signupSchema),
+    });
+    const { login } = useAuth();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | undefined>(undefined);
 
+    const onSubmit = async (data: SignupData) => {
         try {
-            const response = await userService.create(formData);
+            setError(undefined);
+            setLoading(true);
+            const response = await userService.create({
+                name: data.name,
+                phone: data.phone,
+                dateOfBirth: data.dateOfBirth,
+                email: data.email,
+                password: data.password
+            });
 
             if (response) {
-                const responseAuth = await userService.authentication({ email: formData.email, password: formData.password });
-                const { token, expiresIn } = responseAuth.data;
+                const responseAuth = await userService.authentication({ email: data.email, password: data.password });
+                const { token, expiresAt } = responseAuth.data;
 
-                localStorage.setItem('authToken', token);
-                localStorage.setItem('expiresIn', expiresIn);
-
-                window.location.reload();
+                login(token, expiresAt);
             }
         } catch (error: any) {
-            console.error(error);
+            if (error.response.data.message) {
+                setError(error.response.data.message);
+            } else {
+                console.error(error);
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <Container>
-            <Form onSubmit={handleSubmit}>
+            <FormBox>
                 <Title>Cadastro de Usuário</Title>
-                <InputGroup>
-                    <FaUser />
-                    <input
-                        type="text"
-                        name="name"
-                        required
-                        value={formData.name}
-                        onChange={handleChange}
-                        placeholder=" "
-                    />
-                    <label>Nome</label>
-                </InputGroup>
-                <InputGroup>
-                    <FaPhone />
-                    <input
-                        type="tel"
-                        name="phone"
-                        required
-                        value={formData.phone}
-                        onChange={handleChange}
-                        placeholder=" "
-                    />
-                    <label>Número de Telefone</label>
-                </InputGroup>
-                <InputGroup>
-                    <FaCalendarAlt />
-                    <input
-                        type="date"
-                        name="dateOfBirth"
-                        required
-                        value={formData.dateOfBirth}
-                        onChange={handleChange}
-                    />
-                    <label>Data de Nascimento</label>
-                </InputGroup>
-                <InputGroup>
-                    <FaEnvelope />
-                    <input
-                        type="email"
-                        name="email"
-                        required
-                        value={formData.email}
-                        onChange={handleChange}
-                        placeholder=" "
-                    />
-                    <label>Email</label>
-                </InputGroup>
-                <InputGroup>
-                    <FaLock />
-                    <input
-                        type="password"
-                        name="password"
-                        required
-                        value={formData.password}
-                        onChange={handleChange}
-                        placeholder=" "
-                    />
-                    <label>Senha</label>
-                </InputGroup>
-                <Button style={{ marginTop: "30px" }} type="submit">{loading ? <Loader size={28} /> : "Cadastrar"}</Button>
+                <FormRoot form={form} onSubmit={form.handleSubmit(onSubmit)}>
+                    <Input type="text" floatingLabel='Nome' name='name' leftIcon={<FaUser />} />
+
+                    <Input type="text" mask="phone" floatingLabel='Número de telefone' name='phone' leftIcon={<FaPhone />} />
+
+                    <Input type="date" max={dayjs().format("YYYY-MM-DD")} floatingLabel='Data de nascimento' name='dateOfBirth' leftIcon={<FaCalendarAlt />} />
+
+                    <Input type="email" floatingLabel='Email' name='email' leftIcon={<FaEnvelope />} />
+
+                    <InputPass floatingLabel='Senha' name='password' leftIcon={<FaLock />} />
+
+                    <InputPass floatingLabel='Confirmar senha' errorMessage={error} name='confirmPassword' leftIcon={<FaLock />} />
+
+                    <Button type="submit">{loading ? <Loader size={28} /> : "Cadastrar"}</Button>
+                </FormRoot>
                 <TextLink>
                     Já possui uma conta? <LinkCustom to="/login">Faça login</LinkCustom>
                 </TextLink>
-            </Form>
+            </FormBox>
         </Container>
     );
 }
