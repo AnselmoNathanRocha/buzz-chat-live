@@ -7,8 +7,8 @@ class MessageService {
     return response.data;
   }
 
-  async getById(id: number): Promise<GetMessage[]> {
-    const response = await httpClient.get(`/message/${id}`);
+  async getById(chatId: number): Promise<GetMessage[]> {
+    const response = await httpClient.get(`/message/${chatId}`);
     return response.data;
   }
 

@@ -1,9 +1,8 @@
 import { httpClient } from "./http-client";
-import { PostContact } from "../models/Contact";
-import { GetChat } from "@/models/Chat";
+import { GetContact, PostContact } from "../models/Contact";
 
 class ContactService {
-  async get(): Promise<GetChat[]> {
+  async get(): Promise<GetContact[]> {
     const response = await httpClient.get("/contact");
     return response.data;
   }

@@ -1,7 +1,6 @@
 import axios from "axios";
 
-// const API_BASE_URL = "http://localhost:5000/";
-const API_BASE_URL = "https://total-track-52852a7cf2b1.herokuapp.com/";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://buzz-chat-f70b79635e3e.herokuapp.com/";
 
 export const httpClient = axios.create({
   baseURL: API_BASE_URL,

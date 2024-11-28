@@ -55,7 +55,7 @@ export const Message = styled.div<{ $isSent: boolean }>`
   background-color: ${({ $isSent, theme }) =>
     $isSent ? theme.colors.primary : theme.colors.secondary};
   color: ${({ $isSent, theme }) =>
-    $isSent ? theme.colors.white : theme.colors.text};
+    $isSent ? theme.colors.background : theme.colors.background};
   align-self: ${({ $isSent }) => ($isSent ? "flex-end" : "flex-start")};
 
   ${({ $isSent }) =>

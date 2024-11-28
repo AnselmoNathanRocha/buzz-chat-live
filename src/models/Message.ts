@@ -1,12 +1,12 @@
 export interface PostMessage {
-  receiverId: number;
-  message: string;
+  chatId: number;
+  content: string;
 }
 
 export interface GetMessage {
   id: number;
   senderId: number;
   receiverId: number;
-  message: string;
+  content: string;
   sentAt: string;
 }

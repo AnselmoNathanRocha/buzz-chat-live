@@ -3,7 +3,12 @@ import { GetChat, PostChat } from "../models/Chat";
 
 class ChatService {
   async get(): Promise<GetChat[]> {
-    const response = await httpClient.get("/chat");
+    const response = await httpClient.get(`/chat`);
+    return response.data;
+  }
+
+  async getById(id: number): Promise<GetChat> {
+    const response = await httpClient.get(`/chat/${id}`);
     return response.data;
   }
 

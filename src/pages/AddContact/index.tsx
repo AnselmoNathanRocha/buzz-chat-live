@@ -8,7 +8,7 @@ import { BackButton } from '@/styles/GlobalStyles';
 import { FaArrowLeft } from 'react-icons/fa';
 
 export function AddContact() {
-    const [formData, setFormData] = useState({ nameContact: '', phone: '' });
+    const [formData, setFormData] = useState({ nickname: '', phone: '' });
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -46,8 +46,8 @@ export function AddContact() {
                     <label>Nome:</label>
                     <input
                         type="text"
-                        name='nameContact'
-                        value={formData.nameContact}
+                        name='nickname'
+                        value={formData.nickname}
                         onChange={handleChange}
                         required
                     />

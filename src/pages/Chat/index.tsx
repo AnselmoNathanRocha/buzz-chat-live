@@ -15,15 +15,14 @@ import {
 } from './styles';
 import { Loader, LoaderContainer } from '@/components/Loader';
 import { theme } from '@/styles/theme';
-import { jwtDecode } from 'jwt-decode';
 import { FormRoot } from '@/components/Forms/FormRoot';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import imageDefault from "@/assets/image-profile-default.jpg";
-import { userService } from '@/services/user-service';
-import { GetUser } from '@/models/User';
 import { toastService } from '@/services/toast-service';
+import { chatService } from '@/services/chat-service';
+import { GetChat } from '@/models/Chat';
 
 const chatSchema = z.object({
     message: z.string().optional(),
@@ -31,19 +30,14 @@ const chatSchema = z.object({
 
 type ChatData = z.infer<typeof chatSchema>;
 
-interface JwtPayload {
-    id: number;
-    exp?: number;
-}
-
 export function Chat() {
     const form = useForm<ChatData>({
         resolver: zodResolver(chatSchema),
     });
     const { contactId } = useParams<{ contactId: string }>();
     const [loading, setLoading] = useState<boolean>(true);
-    const [messages, setMessages] = useState<GetMessage[]>([]);
-    const [user, setUser] = useState<GetUser>();
+    const [messages, setMessages] = useState<GetMessage[]>([]); // Dados da mensagem
+    const [chat, SetChat] = useState<GetChat>();
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const navigate = useNavigate();
 
@@ -53,44 +47,34 @@ export function Chat() {
         }
     }, [messages]);
 
-    const getUserIdFromToken = (): number | null => {
-        const token = localStorage.getItem('authToken');
-        if (!token) return null;
-
-        try {
-            const decoded: JwtPayload = jwtDecode(token);
-            return decoded.id;
-        } catch (error) {
-            console.error('Erro ao decodificar o token:', error);
-            return null;
-        }
-    };
-
-    const userId = getUserIdFromToken();
+    const userId = 1;
 
     useEffect(() => {
         const fetchMessages = async () => {
             try {
+                console.log("contactId: ", contactId);
+                const responseChat = await chatService.getById(Number(contactId));
                 const response = await messageService.getById(Number(contactId));
-                const responseUser = await userService.get();
-                setMessages(response);
-                setUser(responseUser);
+
+                // Aqui, você já recebe as mensagens no formato esperado
+                SetChat(responseChat);
+                setMessages(response); // Assumindo que a resposta vem como o array de mensagens
+
             } catch (error) {
                 console.error(error);
-                setMessages([]);
+                setMessages([]); // Caso ocorra algum erro, as mensagens são definidas como um array vazio
             } finally {
                 setLoading(false);
             }
         };
 
         fetchMessages();
-    }, []);
+    }, [contactId]); // Dependendo do contactId, a função será chamada
 
     useEffect(() => {
-        if (user) {
-            // const API_SOCKET_BASE_URL = 'ws://localhost:5000/';
-            const API_SOCKET_BASE_URL = 'wss://total-track-52852a7cf2b1.herokuapp.com/';
-            const ws = new WebSocket(`${API_SOCKET_BASE_URL}`, [String(user.id)]);
+        if (chat) {
+            const API_SOCKET_BASE_URL = import.meta.env.VITE_API_BASE_URL || "wss://buzz-chat-f70b79635e3e.herokuapp.com/";
+            const ws = new WebSocket(`${API_SOCKET_BASE_URL}`, [String(chat.chatId)]);
 
             ws.onopen = () => {
                 console.log("WebSocket conectado");
@@ -123,15 +107,15 @@ export function Chat() {
                 ws.close();
             };
         }
-    }, [user]);
+    }, [chat]);
 
     const handleSendMessage = async (data: ChatData) => {
         if (!data.message?.trim()) return;
 
         try {
             const response = await messageService.create({
-                message: data.message,
-                receiverId: Number(contactId),
+                content: data.message,
+                chatId: Number(contactId),
             });
 
             setMessages([
@@ -140,7 +124,7 @@ export function Chat() {
                     id: response.id,
                     senderId: userId!,
                     receiverId: 2,
-                    message: data.message,
+                    content: data.message,
                     sentAt: new Date().toISOString(),
                 },
             ]);
@@ -155,9 +139,9 @@ export function Chat() {
             <Header>
                 <FaArrowLeft style={{ cursor: 'pointer' }} onClick={() => navigate(-1)} />
                 <UserStatus>
-                    <img src={user && user.photo !== "" ? user.photo : imageDefault} alt="User Avatar" />
+                    <img src={chat && chat.users.photo !== "" ? chat.users.photo : imageDefault} alt="chat Avatar" />
                     <div>
-                        <div>{user && user.name}</div>
+                        <div>{chat && chat.name}</div>
                         <div className="status">Online</div>
                     </div>
                 </UserStatus>
@@ -170,7 +154,7 @@ export function Chat() {
                 ) : (
                     messages.map((message) => (
                         <Message key={message.id} $isSent={message.senderId === userId}>
-                            {message.message}
+                            {message.content}
                         </Message>
                     ))
                 )}

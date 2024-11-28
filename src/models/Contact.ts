@@ -1,15 +1,17 @@
 export interface PostContact {
-  nameContact: string;
+  nickname: string;
   phone: string;
 }
 
 export interface GetContact {
-  id: number;
-  nameContact: string;
+  contactId: number;
+  userId: number;
+  chatId: number;
+  name: string;
+  nickname: string;
   phone: string;
-  idUser: number;
-  photoUser: string;
-  statusMessageUser: string;
+  statusMessage: string;
+  photo: string;
   createdAt: string;
   updatedAt: string;
 }

@@ -49,7 +49,7 @@ export function Home() {
 
     const filteredConversations = Array.isArray(conversations)
         ? conversations.filter(conversation =>
-            conversation.nameContact.toLowerCase().includes(search!.toLowerCase())
+            conversation.users.name.toLowerCase().includes(search!.toLowerCase())
         )
         : [];
 
@@ -85,9 +85,14 @@ export function Home() {
                         <ConversationsList>
                             {filteredConversations.map((conversation, index) => (
                                 <ConversationItem
-                                    key={`${conversation.id}-${index}`}
-                                    conversation={conversation}
-                                    onClick={() => navigate(`/chat/${conversation.receiverId}`)}
+                                    key={`${conversation.chatId}-${index}`}
+                                    data={{
+                                        id: conversation.users.userId,
+                                        name: conversation.users.nickname,
+                                        photo: conversation.users.photo,
+                                        statusMessage: conversation.lastMessage.content
+                                    }}
+                                    onClick={() => navigate(`/chat/${conversation.chatId}`)}
                                 />
                             ))}
                         </ConversationsList>

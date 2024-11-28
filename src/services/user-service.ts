@@ -7,6 +7,11 @@ class UserService {
     return response.data;
   }
 
+  async getById(id: number): Promise<GetUser> {
+    const response = await httpClient.get(`/user/${id}`);
+    return response.data;
+  }
+
   async create(data: PostUser) {
     const response = await httpClient.post("/user", data);
     return response.data;

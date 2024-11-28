@@ -8,23 +8,22 @@ import { OptionsMenu } from '@/components/OptionsMenu';
 import { Loader, LoaderContainer } from '@/components/Loader';
 import { useAuth } from '@/context/auth';
 import { contactService } from '@/services/contact-service';
-import { GetChat } from '@/models/Chat';
 
 import { Container, Title, SearchGroup, ConversationsList, MenuButton, FloatingButton } from '@/pages/Contacts/styles';
 import { BackButton, EmptyMessage } from '@/styles/GlobalStyles';
 import { theme } from '@/styles/theme';
+import { GetContact } from '@/models/Contact';
 
 export function Contacts() {
     const [searchQuery, setSearchQuery] = useState('');
     const [menuOpen, setMenuOpen] = useState(false);
     const selectedContacts = [];
-    const [contacts, setContacts] = useState<GetChat[]>([]);
+    const [contacts, setContacts] = useState<GetContact[]>([]);
     const [loading, setLoading] = useState(true);
 
     const { token } = useAuth();
     const navigate = useNavigate();
 
-    // Função para buscar os contatos
     useEffect(() => {
         const fetchContacts = async () => {
             try {
@@ -42,12 +41,10 @@ export function Contacts() {
         fetchContacts();
     }, [token]);
 
-    // Filtrar contatos com base na pesquisa
-    const filteredContacts = contacts.filter(contact =>
-        contact.nameContact.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredContacts = contacts ? contacts.filter(contact =>
+        contact.nickname.toLowerCase().includes(searchQuery.toLowerCase())
+    ) : [];
 
-    // Determinar se mais de um contato está selecionado
     const isMultipleSelected = selectedContacts.length > 1;
 
     return (
@@ -89,9 +86,14 @@ export function Contacts() {
                         <ConversationsList>
                             {filteredContacts.map((contact, index) => (
                                 <ConversationItem
-                                    key={`${contact.id}-${index}`}
-                                    conversation={contact}
-                                    onClick={() => navigate(`/chat/${contact.idUser}`)}
+                                    key={`${contact.contactId}-${index}`}
+                                    data={{
+                                        id: contact.contactId,
+                                        name: contact.nickname,
+                                        photo: contact.photo,
+                                        statusMessage: contact.statusMessage
+                                    }}
+                                    onClick={() => navigate(`/chat/${contact.chatId}`)}
                                 />
                             ))}
                         </ConversationsList>
@@ -99,14 +101,12 @@ export function Contacts() {
                 </>
             )}
 
-            {/* Botão flutuante para ações com contatos selecionados */}
             {selectedContacts.length > 0 && (
                 <FloatingButton>
                     {isMultipleSelected ? <FaUsers /> : <FaComments />}
                 </FloatingButton>
             )}
 
-            {/* Botão flutuante para adicionar novos contatos */}
             <FloatingButton onClick={() => navigate('/add-contact')}>
                 <FaPlus />
             </FloatingButton>

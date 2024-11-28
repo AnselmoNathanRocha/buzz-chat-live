@@ -10,16 +10,22 @@ import {
     LastMessage,
     ReadIcon
 } from './styles';
-import { GetChat } from '@/models/Chat';
+
 import imageDefault from "@/assets/image-profile-default.jpg";
 
+// Defina o tipo do objeto "data" conforme os novos campos
 interface Props {
-    conversation: GetChat;
+    data: {
+        id: number;
+        photo: string;
+        name: string;
+        statusMessage: string;
+    };
     onClick: () => void;
     selected?: boolean;
 }
 
-export function ConversationItem({ conversation, onClick, selected = false }: Props) {
+export function ConversationItem({ data, onClick, selected = false }: Props) {
     const [isHovered, setIsHovered] = useState(false);
     const [isChecked, setIsChecked] = useState(selected);
 
@@ -39,10 +45,10 @@ export function ConversationItem({ conversation, onClick, selected = false }: Pr
             <CheckboxContainer $isHovered={isHovered} $isSelected={isChecked} onClick={handleCheckboxClick}>
                 {isChecked ? <IoMdCheckbox /> : <IoMdSquareOutline />}
             </CheckboxContainer>
-            <UserImage src={conversation.photoUser !== "" ? conversation.photoUser : imageDefault} alt={`${conversation.nameContact}'s avatar`} />
+            <UserImage src={data.photo !== "" ? data.photo : imageDefault} alt={`${data.name}'s avatar`} />
             <UserInfo>
-                <UserName>{conversation.nameContact}</UserName>
-                <LastMessage>{conversation.lastMessage}</LastMessage>
+                <UserName>{data.name}</UserName>
+                <LastMessage>{data.statusMessage}</LastMessage>
             </UserInfo>
             <ReadIcon $isRead={true}>
                 <IoCheckmarkDone />
