@@ -123,9 +123,9 @@ export function Chat() {
                 {
                     id: response.id,
                     senderId: userId!,
-                    receiverId: 2,
                     content: data.message,
                     sentAt: new Date().toISOString(),
+                    isSender: true
                 },
             ]);
             form.setValue("message", "");
@@ -153,7 +153,7 @@ export function Chat() {
                     </LoaderContainer>
                 ) : (
                     messages.map((message) => (
-                        <Message key={message.id} $isSent={message.senderId === userId}>
+                        <Message key={message.id} $isSent={message.isSender}>
                             {message.content}
                         </Message>
                     ))

@@ -6,7 +6,7 @@ export interface PostMessage {
 export interface GetMessage {
   id: number;
   senderId: number;
-  receiverId: number;
   content: string;
   sentAt: string;
+  isSender: boolean;
 }
