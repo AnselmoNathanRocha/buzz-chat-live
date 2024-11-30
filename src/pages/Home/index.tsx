@@ -90,7 +90,7 @@ export function Home() {
                                         id: conversation.users.userId,
                                         name: conversation.users.nickname,
                                         photo: conversation.users.photo,
-                                        statusMessage: conversation.lastMessage.content
+                                        statusMessage: conversation.lastMessage ? conversation.lastMessage.content : ""
                                     }}
                                     onClick={() => navigate(`/chat/${conversation.chatId}`)}
                                 />

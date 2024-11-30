@@ -36,7 +36,7 @@ export function Chat() {
     });
     const { contactId } = useParams<{ contactId: string }>();
     const [loading, setLoading] = useState<boolean>(true);
-    const [messages, setMessages] = useState<GetMessage[]>([]); // Dados da mensagem
+    const [messages, setMessages] = useState<GetMessage[]>([]);
     const [chat, SetChat] = useState<GetChat>();
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const navigate = useNavigate();
@@ -56,25 +56,24 @@ export function Chat() {
                 const responseChat = await chatService.getById(Number(contactId));
                 const response = await messageService.getById(Number(contactId));
 
-                // Aqui, você já recebe as mensagens no formato esperado
                 SetChat(responseChat);
-                setMessages(response); // Assumindo que a resposta vem como o array de mensagens
+                setMessages(response);
 
             } catch (error) {
                 console.error(error);
-                setMessages([]); // Caso ocorra algum erro, as mensagens são definidas como um array vazio
+                setMessages([]);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchMessages();
-    }, [contactId]); // Dependendo do contactId, a função será chamada
+    }, [contactId]);
 
     useEffect(() => {
         if (chat) {
             const API_SOCKET_BASE_URL = import.meta.env.VITE_API_BASE_URL || "wss://buzz-chat-f70b79635e3e.herokuapp.com/";
-            const ws = new WebSocket(`${API_SOCKET_BASE_URL}`, [String(chat.chatId)]);
+            const ws = new WebSocket(`${API_SOCKET_BASE_URL}`, [String(chat.users.userId)]);
 
             ws.onopen = () => {
                 console.log("WebSocket conectado");
@@ -141,7 +140,7 @@ export function Chat() {
                 <UserStatus>
                     <img src={chat && chat.users.photo !== "" ? chat.users.photo : imageDefault} alt="chat Avatar" />
                     <div>
-                        <div>{chat && chat.name}</div>
+                        <div>{chat && chat.users.nickname}</div>
                         <div className="status">Online</div>
                     </div>
                 </UserStatus>
