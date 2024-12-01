@@ -238,29 +238,39 @@ export function Chat() {
 
     const userId = 1;
 
+    useEffect(() => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [messages]);
+
     // Solicita permissão para exibir notificações
     useEffect(() => {
-        if (Notification.permission !== 'granted') {
-            Notification.requestPermission();
+        if (Notification.permission !== "granted") {
+            Notification.requestPermission().then((permission) => {
+                if (permission !== "granted") {
+                    console.warn("Permissão de notificação negada.");
+                }
+            });
         }
     }, []);
 
     // Exibe uma notificação, toca som e vibra o celular
-    const handleNotification = (title: string, body: string) => {
-        if (Notification.permission === 'granted') {
-            // Cria a notificação
-            new Notification(title, { body, icon: imageDefault });
+    // const handleNotification = (title: string, body: string) => {
+    //     if (Notification.permission === 'granted') {
+    //         // Cria a notificação
+    //         new Notification(title, { body, icon: imageDefault });
 
-            // Vibração (funciona em dispositivos móveis)
-            if (navigator.vibrate) {
-                navigator.vibrate([200, 100, 200]); // Padrão de vibração
-            }
+    //         // Vibração (funciona em dispositivos móveis)
+    //         if (navigator.vibrate) {
+    //             navigator.vibrate([200, 100, 200]); // Padrão de vibração
+    //         }
 
-            // Toca som
-            const audio = new Audio(chatNotification); // Substitua pelo caminho do som
-            audio.play().catch((error) => console.error("Erro ao reproduzir som:", error));
-        }
-    };
+    //         // Toca som
+    //         const audio = new Audio(chatNotification); // Substitua pelo caminho do som
+    //         audio.play().catch((error) => console.error("Erro ao reproduzir som:", error));
+    //     }
+    // };
 
     useEffect(() => {
         const fetchMessages = async () => {
@@ -296,22 +306,39 @@ export function Chat() {
                 try {
                     const message = JSON.parse(event.data);
                     if (message.type === "newMessage") {
-                        setMessages((prevMessages) => [
-                            ...prevMessages,
-                            {
-                                id: message.payload.messageId,
-                                senderId: message.payload.senderId,
-                                content: message.payload.content,
-                                sentAt: message.payload.timestamp,
-                                isSender: false,
-                            }
-                        ]);
+                        const newMessage = {
+                            id: message.payload.messageId,
+                            senderId: message.payload.senderId,
+                            content: message.payload.content,
+                            sentAt: message.payload.timestamp,
+                            isSender: false,
+                        };
 
-                        // Notifica o usuário sobre a nova mensagem
-                        handleNotification(
-                            chat.users.nickname || "Nova mensagem",
-                            message.payload.content
-                        );
+                        setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+                        console.log("Nova mensagem recebida: ", message);
+
+                        // Exibir notificação do navegador
+                        if (Notification.permission === "granted") {
+                            const notification = new Notification(chat.users.nickname, {
+                                body: message.payload.content,
+                                icon: chat.users.photo || imageDefault,
+                            });
+
+                            // Reproduzir som de notificação
+                            const audio = new Audio(chatNotification);
+                            audio.play();
+
+                            // Vibrar o celular (se suportado)
+                            if (navigator.vibrate) {
+                                navigator.vibrate([200, 100, 200]);
+                            }
+
+                            // Abrir o app ao clicar na notificação
+                            notification.onclick = () => {
+                                window.focus();
+                            };
+                        }
                     }
                 } catch (error) {
                     console.error("Erro ao processar mensagem do WebSocket:", error);
