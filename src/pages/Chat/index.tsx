@@ -23,6 +23,7 @@ import imageDefault from "@/assets/image-profile-default.jpg";
 import { toastService } from '@/services/toast-service';
 import { chatService } from '@/services/chat-service';
 import { GetChat } from '@/models/Chat';
+import { useForceRefresh } from '@/hooks/use-force-refresh';
 
 const chatSchema = z.object({
     message: z.string().optional(),
@@ -40,6 +41,7 @@ export function Chat() {
     const [chat, SetChat] = useState<GetChat>();
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const navigate = useNavigate();
+    const forceRefresh = useForceRefresh();
 
     useEffect(() => {
         if (messagesEndRef.current) {
@@ -101,13 +103,14 @@ export function Chat() {
 
             ws.onclose = () => {
                 console.log("WebSocket desconectado");
+                forceRefresh();
             };
 
             return () => {
                 ws.close();
             };
         }
-    }, [chat]);
+    }, [chat, forceRefresh]);
 
     const handleSendMessage = async (data: ChatData) => {
         if (!data.message?.trim()) return;
