@@ -78,7 +78,7 @@ export function Chat() {
             const ws = new WebSocket(`${API_SOCKET_BASE_URL}`, [String(chat.users.userId)]);
 
             ws.onopen = () => {
-                console.log("WebSocket conectado");
+                console.log("WebSocket conectado para o usuário:", chat.users.userId);
                 toastService.info("WebSocket conectado!");
             };
 
@@ -88,9 +88,9 @@ export function Chat() {
                     if (message.type === "newMessage") {
                         setMessages((prevMessages) => [
                             ...prevMessages,
-                            message.payload,
+                            message,  // Alterado para adicionar a mensagem diretamente
                         ]);
-                        console.log("Nova mensagem recebida: ", message.payload);
+                        console.log("Nova mensagem recebida: ", message);
                     }
                 } catch (error) {
                     console.error("Erro ao processar mensagem do WebSocket:", error);
