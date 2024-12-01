@@ -88,8 +88,15 @@ export function Chat() {
                     if (message.type === "newMessage") {
                         setMessages((prevMessages) => [
                             ...prevMessages,
-                            message,  // Alterado para adicionar a mensagem diretamente
+                            {
+                                id: message.payload.messageId,
+                                senderId: message.payload.senderId,
+                                content: message.payload.content,
+                                sentAt: message.payload.timestamp,
+                                isSender: false,
+                            }
                         ]);
+                        console.log("Messages: ", messages);
                         console.log("Nova mensagem recebida: ", message);
                     }
                 } catch (error) {
