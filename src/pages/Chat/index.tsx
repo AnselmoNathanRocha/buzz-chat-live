@@ -88,6 +88,7 @@ export function Chat() {
                             ...prevMessages,
                             message.payload,
                         ]);
+                        console.log("Nova mensagem recebida: ", message.payload);
                     }
                 } catch (error) {
                     console.error("Erro ao processar mensagem do WebSocket:", error);
