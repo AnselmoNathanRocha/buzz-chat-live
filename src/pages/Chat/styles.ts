@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled, { css } from "styled-components";
 
 export const Container = styled.div`
   display: flex;
@@ -57,6 +57,10 @@ export const Message = styled.div<{ $isSent: boolean }>`
   color: ${({ $isSent, theme }) =>
     $isSent ? theme.colors.background : theme.colors.background};
   align-self: ${({ $isSent }) => ($isSent ? "flex-end" : "flex-start")};
+
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
 
   ${({ $isSent }) =>
     $isSent
