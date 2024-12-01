@@ -49,7 +49,7 @@ export function Home() {
 
     const filteredConversations = Array.isArray(conversations)
         ? conversations.filter(conversation =>
-            conversation.users.name.toLowerCase().includes(search!.toLowerCase())
+            conversation.users.nickname.toLowerCase().includes(search!.toLowerCase())
         )
         : [];
 
@@ -90,7 +90,8 @@ export function Home() {
                                         id: conversation.users.userId,
                                         name: conversation.users.nickname,
                                         photo: conversation.users.photo,
-                                        statusMessage: conversation.lastMessage ? conversation.lastMessage.content : ""
+                                        statusMessage: conversation.lastMessage ? conversation.lastMessage.content : "",
+                                        timestamp: conversation.lastMessage.timestamp
                                     }}
                                     onClick={() => navigate(`/chat/${conversation.chatId}`)}
                                 />

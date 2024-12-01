@@ -5,6 +5,7 @@ export const ItemContainer = styled.li<{
   $isHovered: boolean;
 }>`
   position: relative;
+  user-select: none;
   width: 100%;
   display: flex;
   align-items: center;
@@ -76,4 +77,13 @@ export const LastMessage = styled.p`
 export const ReadIcon = styled.span<{ $isRead: boolean }>`
   font-size: 14px;
   color: ${({ $isRead }) => ($isRead ? "green" : "gray")};
+`;
+
+export const Timestamp = styled.span`
+  margin-right: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #00000055;
+  display: inline-block;
+  vertical-align: middle;
 `;

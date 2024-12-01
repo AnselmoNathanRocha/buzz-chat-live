@@ -49,8 +49,6 @@ export function Chat() {
         }
     }, [messages]);
 
-    const userId = 1;
-
     useEffect(() => {
         if (Notification.permission !== "granted") {
             Notification.requestPermission().then((permission) => {
@@ -64,7 +62,6 @@ export function Chat() {
     useEffect(() => {
         const fetchMessages = async () => {
             try {
-                console.log("contactId: ", contactId);
                 const responseChat = await chatService.getById(Number(contactId));
                 const response = await messageService.getById(Number(contactId));
 
@@ -104,8 +101,6 @@ export function Chat() {
                         };
 
                         setMessages((prevMessages) => [...prevMessages, newMessage]);
-
-                        console.log("Nova mensagem recebida: ", message);
 
                         if (Notification.permission === "granted") {
                             const notification = new Notification(chat.users.nickname, {
@@ -158,7 +153,7 @@ export function Chat() {
                 ...messages,
                 {
                     id: response.id,
-                    senderId: userId!,
+                    senderId: response.senderId,
                     content: data.message,
                     sentAt: new Date().toISOString(),
                     isSender: true
@@ -174,7 +169,7 @@ export function Chat() {
         <Container>
             <Header>
                 <FaArrowLeft style={{ cursor: 'pointer' }} onClick={() => navigate(-1)} />
-                <UserStatus>
+                <UserStatus onClick={() => navigate(`/profile/${contactId}`)}>
                     <img src={chat && chat.users.photo !== "" ? chat.users.photo : imageDefault} alt="chat Avatar" />
                     <div>
                         <div>{chat && chat.users.nickname}</div>

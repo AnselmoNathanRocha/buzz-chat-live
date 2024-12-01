@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { IoMdCheckbox, IoMdSquareOutline } from 'react-icons/io';
-import { IoCheckmarkDone } from 'react-icons/io5';
+import { useState } from "react";
+import { IoMdCheckbox, IoMdSquareOutline } from "react-icons/io";
+import { IoCheckmarkDone } from "react-icons/io5";
+import dayjs from "dayjs";
 import {
     ItemContainer,
     CheckboxContainer,
@@ -8,18 +9,19 @@ import {
     UserInfo,
     UserName,
     LastMessage,
-    ReadIcon
-} from './styles';
+    ReadIcon,
+    Timestamp,
+} from "./styles";
 
 import imageDefault from "@/assets/image-profile-default.jpg";
 
-// Defina o tipo do objeto "data" conforme os novos campos
 interface Props {
     data: {
         id: number;
         photo: string;
         name: string;
         statusMessage: string;
+        timestamp: string;
     };
     onClick: () => void;
     selected?: boolean;
@@ -34,6 +36,8 @@ export function ConversationItem({ data, onClick, selected = false }: Props) {
         setIsChecked((prev) => !prev);
     };
 
+    const formattedTime = dayjs(data.timestamp).format("HH:mm");
+
     return (
         <ItemContainer
             onClick={onClick}
@@ -42,15 +46,23 @@ export function ConversationItem({ data, onClick, selected = false }: Props) {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            <CheckboxContainer $isHovered={isHovered} $isSelected={isChecked} onClick={handleCheckboxClick}>
+            <CheckboxContainer
+                $isHovered={isHovered}
+                $isSelected={isChecked}
+                onClick={handleCheckboxClick}
+            >
                 {isChecked ? <IoMdCheckbox /> : <IoMdSquareOutline />}
             </CheckboxContainer>
-            <UserImage src={data.photo !== "" ? data.photo : imageDefault} alt={`${data.name}'s avatar`} />
+            <UserImage
+                src={data.photo !== "" ? data.photo : imageDefault}
+                alt={`${data.name}'s avatar`}
+            />
             <UserInfo>
                 <UserName>{data.name}</UserName>
                 <LastMessage>{data.statusMessage}</LastMessage>
             </UserInfo>
             <ReadIcon $isRead={true}>
+                <Timestamp>{formattedTime}</Timestamp>
                 <IoCheckmarkDone />
             </ReadIcon>
         </ItemContainer>

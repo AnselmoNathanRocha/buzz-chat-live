@@ -12,6 +12,8 @@ export const Header = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 20px;
+  cursor: pointer;
+  user-select: none;
 `;
 
 export const UserStatus = styled.div`
