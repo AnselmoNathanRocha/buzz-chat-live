@@ -82,7 +82,7 @@ export function Chat() {
     useEffect(() => {
         if (chat) {
             const API_SOCKET_BASE_URL = import.meta.env.VITE_API_BASE_URL || "wss://buzz-chat-f70b79635e3e.herokuapp.com/";
-            const ws = new WebSocket(`${API_SOCKET_BASE_URL}`, [String(chat.users.id)]);
+            const ws = new WebSocket(`${API_SOCKET_BASE_URL}`, [String(chat.users.userId)]);
 
             ws.onopen = () => {
                 console.log("WebSocket conectado!");
