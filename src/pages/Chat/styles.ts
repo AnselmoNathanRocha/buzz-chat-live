@@ -12,8 +12,6 @@ export const Header = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 20px;
-  cursor: pointer;
-  /* user-select: none; */
 `;
 
 export const UserStatus = styled.div`
@@ -21,7 +19,7 @@ export const UserStatus = styled.div`
   align-items: center;
   margin-left: 10px;
   cursor: pointer;
-  /* user-select: none; */
+  user-select: none;
 
   & img {
     width: 40px;
