@@ -21,7 +21,7 @@ interface Props {
         photo: string;
         name: string;
         statusMessage: string;
-        timestamp: string;
+        timestamp?: string;
     };
     onClick: () => void;
     selected?: boolean;
@@ -35,8 +35,6 @@ export function ConversationItem({ data, onClick, selected = false }: Props) {
         event.stopPropagation();
         setIsChecked((prev) => !prev);
     };
-
-    const formattedTime = dayjs(data.timestamp).format("HH:mm");
 
     return (
         <ItemContainer
@@ -62,7 +60,7 @@ export function ConversationItem({ data, onClick, selected = false }: Props) {
                 <LastMessage>{data.statusMessage}</LastMessage>
             </UserInfo>
             <ReadIcon $isRead={true}>
-                <Timestamp>{formattedTime}</Timestamp>
+                {data.timestamp && <Timestamp>{dayjs(data.timestamp).format("HH:mm")}</Timestamp>}
                 <IoCheckmarkDone />
             </ReadIcon>
         </ItemContainer>
