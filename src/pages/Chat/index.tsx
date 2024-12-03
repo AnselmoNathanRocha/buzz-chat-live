@@ -25,7 +25,6 @@ import {
     UserStatus
 } from './styles';
 
-// Schema de validação de mensagem
 const chatSchema = z.object({
     message: z.string().optional(),
 });
@@ -33,7 +32,6 @@ const chatSchema = z.object({
 type ChatData = z.infer<typeof chatSchema>;
 
 export function Chat() {
-    // Definindo o hook do formulário
     const form = useForm<ChatData>({
         resolver: zodResolver(chatSchema),
     });
@@ -46,7 +44,6 @@ export function Chat() {
     const navigate = useNavigate();
     const forceRefresh = useForceRefresh();
 
-    // Scroll automático para o final das mensagens
     useEffect(() => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -155,6 +152,9 @@ export function Chat() {
                         icon: "../../../public/chat512.png",
                         silent: true,
                         tag: "notificacao-personalizada",
+                        data: {
+                            url: `/`,
+                        },
                     });
                 })
                 .catch((error) => {
@@ -162,6 +162,7 @@ export function Chat() {
                 });
         }
     };
+
 
     const handleSendMessage = async (data: ChatData) => {
         if (!data.message?.trim()) return;
