@@ -118,7 +118,7 @@ export function Chat() {
                         };
 
                         setMessages((prevMessages) => [...prevMessages, newMessage]);
-                        sendCustomNotification(message.payload.content);
+                        sendCustomNotification(`${chat.users.nickname}: ${message.payload.content}`);
                     }
                 } catch (error) {
                     console.error("Erro ao processar mensagem do WebSocket:", error);
