@@ -3,16 +3,6 @@ import { FaArrowLeft } from 'react-icons/fa';
 import { useNavigate, useParams } from 'react-router-dom';
 import { messageService } from '@/services/message-service';
 import { GetMessage } from '@/models/Message';
-import {
-    Container,
-    Header,
-    Input,
-    InputContainer,
-    Message,
-    MessagesContainer,
-    SendButton,
-    UserStatus,
-} from './styles';
 import { Loader, LoaderContainer } from '@/components/Loader';
 import { theme } from '@/styles/theme';
 import { FormRoot } from '@/components/Forms/FormRoot';
@@ -24,7 +14,18 @@ import { chatService } from '@/services/chat-service';
 import { GetChat } from '@/models/Chat';
 import { useForceRefresh } from '@/hooks/use-force-refresh';
 import chatNotification from "@/assets/buzz-chat-notification.mp3";
+import {
+    Container,
+    Header,
+    Input,
+    InputContainer,
+    Message,
+    MessagesContainer,
+    SendButton,
+    UserStatus
+} from './styles';
 
+// Schema de validação de mensagem
 const chatSchema = z.object({
     message: z.string().optional(),
 });
@@ -32,17 +33,20 @@ const chatSchema = z.object({
 type ChatData = z.infer<typeof chatSchema>;
 
 export function Chat() {
+    // Definindo o hook do formulário
     const form = useForm<ChatData>({
         resolver: zodResolver(chatSchema),
     });
+
     const { contactId } = useParams<{ contactId: string }>();
     const [loading, setLoading] = useState<boolean>(true);
     const [messages, setMessages] = useState<GetMessage[]>([]);
-    const [chat, SetChat] = useState<GetChat>();
+    const [chat, setChat] = useState<GetChat>();
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const navigate = useNavigate();
     const forceRefresh = useForceRefresh();
 
+    // Scroll automático para o final das mensagens
     useEffect(() => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -50,12 +54,29 @@ export function Chat() {
     }, [messages]);
 
     useEffect(() => {
-        if (Notification.permission !== "granted") {
-            Notification.requestPermission().then((permission) => {
-                if (permission !== "granted") {
-                    console.warn("Permissão de notificação negada.");
-                }
-            });
+        if ("serviceWorker" in navigator && "Notification" in window) {
+            navigator.serviceWorker
+                .register("/service-worker.js")
+                .then(() => {
+                    console.log("Service Worker registrado com sucesso.");
+
+                    if (Notification.permission === "granted") {
+                        console.log("Permissão de notificação já concedida.");
+                    } else if (Notification.permission === "default") {
+                        Notification.requestPermission().then((permission) => {
+                            if (permission === "granted") {
+                                console.log("Permissão de notificação concedida.");
+                            } else {
+                                console.warn("Permissão de notificação negada.");
+                            }
+                        });
+                    }
+                })
+                .catch((error) => {
+                    console.error("Erro ao registrar o Service Worker:", error);
+                });
+        } else {
+            alert("Seu navegador não suporta Service Workers ou Notificações.");
         }
     }, []);
 
@@ -65,9 +86,8 @@ export function Chat() {
                 const responseChat = await chatService.getById(Number(contactId));
                 const response = await messageService.getById(Number(contactId));
 
-                SetChat(responseChat);
+                setChat(responseChat);
                 setMessages(response);
-
             } catch (error) {
                 console.error(error);
                 setMessages([]);
@@ -101,24 +121,7 @@ export function Chat() {
                         };
 
                         setMessages((prevMessages) => [...prevMessages, newMessage]);
-
-                        if (Notification.permission === "granted") {
-                            const notification = new Notification(chat.users.nickname, {
-                                body: message.payload.content,
-                                icon: chat.users.photo || imageDefault,
-                            });
-
-                            const audio = new Audio(chatNotification);
-                            audio.play();
-
-                            if (navigator.vibrate) {
-                                navigator.vibrate([200, 100, 200]);
-                            }
-
-                            notification.onclick = () => {
-                                window.focus();
-                            };
-                        }
+                        sendCustomNotification(message.payload.content);
                     }
                 } catch (error) {
                     console.error("Erro ao processar mensagem do WebSocket:", error);
@@ -140,6 +143,26 @@ export function Chat() {
         }
     }, [chat, forceRefresh]);
 
+    const sendCustomNotification = (message: string) => {
+        if ("serviceWorker" in navigator && "Notification" in window) {
+            const notificationSound = new Audio(chatNotification);
+
+            navigator.serviceWorker.ready
+                .then((registration) => {
+                    notificationSound.play();
+                    registration.showNotification("Nova mensagem", {
+                        body: message,
+                        icon: "../../../public/chat512.png",
+                        silent: true,
+                        tag: "notificacao-personalizada",
+                    });
+                })
+                .catch((error) => {
+                    console.error("Erro ao exibir a notificação:", error);
+                });
+        }
+    };
+
     const handleSendMessage = async (data: ChatData) => {
         if (!data.message?.trim()) return;
 
@@ -156,7 +179,7 @@ export function Chat() {
                     senderId: response.senderId,
                     content: data.message,
                     sentAt: new Date().toISOString(),
-                    isSender: true
+                    isSender: true,
                 },
             ]);
             form.setValue("message", "");
@@ -170,13 +193,14 @@ export function Chat() {
             <Header>
                 <FaArrowLeft style={{ cursor: 'pointer' }} onClick={() => navigate(-1)} />
                 <UserStatus onClick={() => navigate(`/profile/${contactId}`)}>
-                    <img src={chat && chat.users.photo !== "" ? chat.users.photo : imageDefault} alt="chat Avatar" />
+                    <img src={chat?.users.photo || imageDefault} alt="chat Avatar" />
                     <div>
-                        <div>{chat && chat.users.nickname}</div>
+                        <div>{chat?.users.nickname}</div>
                         <div className="status">Online</div>
                     </div>
                 </UserStatus>
             </Header>
+
             <MessagesContainer>
                 {loading ? (
                     <LoaderContainer>
@@ -191,6 +215,7 @@ export function Chat() {
                 )}
                 <div ref={messagesEndRef} />
             </MessagesContainer>
+
             <FormRoot form={form} onSubmit={form.handleSubmit(handleSendMessage)}>
                 <InputContainer>
                     <Controller

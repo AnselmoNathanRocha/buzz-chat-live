@@ -8,6 +8,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ContainerApp, GlobalStyles } from "./styles/GlobalStyles";
 import { AppProvider } from "./context";
+import { verifyTokenService } from "./services/verifyToken-service";
 
 dayjs.locale("pt-br");
 dayjs.extend(utc);
@@ -17,9 +18,22 @@ export function App() {
   const [logged, setLogged] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
+    const checkTokenValidity = async () => {
+      try {
+        const response = await verifyTokenService.get();
 
-    setLogged(token != null ? true : false);
+        if (response?.message === "Token válido.") {
+          setLogged(true);
+        }
+      } catch (error) {
+        console.error("Token inválido ou expirado", error);
+        setLogged(false);
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('expiresIn');
+      }
+    };
+
+    checkTokenValidity();
   }, []);
 
   return (
