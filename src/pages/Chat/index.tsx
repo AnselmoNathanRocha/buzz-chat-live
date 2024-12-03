@@ -158,7 +158,7 @@ export function Chat() {
                     });
                 })
                 .catch((error) => {
-                    console.error("Erro ao exibir a notificação:", error);
+                    console.error("Erro ao exibir a notificação: ", error);
                 });
         }
     };
