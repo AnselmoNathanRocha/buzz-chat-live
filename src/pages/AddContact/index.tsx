@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Container, Title, SubmitButton } from '@/pages/AddContact/styles';
+import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Container, Title, SubmitButton, ContainerInput } from '@/pages/AddContact/styles';
 import { contactService } from '@/services/contact-service';
 import { Loader } from '@/components/Loader';
 import { BackButton } from '@/styles/GlobalStyles';
 import { FaArrowLeft } from 'react-icons/fa';
-import { chatService } from '@/services/chat-service';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,36 +20,20 @@ const contactSchema = z.object({
 type ContactData = z.infer<typeof contactSchema>;
 
 export function AddContact() {
-    const { id } = useParams<{ id: string }>();
-    const [loading, setLoading] = useState(false);
-    const [defaultValues, setDefaultValues] = useState<ContactData>();
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        if (id) {
-            const handleDefaultValues = async () => {
-                try {
-                    const response = await chatService.getById(Number(id));
-
-                    setDefaultValues({ nickname: response.users.nickname, phone: response.users.phone });
-                } catch (error) {
-                    console.error(error);
-                }
-            }
-            handleDefaultValues();
-        }
-    }, [id]);
-
+    const location = useLocation();
+    const defaultValues = location.state?.defaultValues || { nickname: "", phone: "" };
     const form = useForm<ContactData>({
         resolver: zodResolver(contactSchema),
         defaultValues,
     });
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = async (data: ContactData) => {
         try {
             setLoading(true);
 
-            if (id) {
+            if (defaultValues) {
                 await contactService.update(data);
             } else {
                 await contactService.create(data);
@@ -65,17 +48,19 @@ export function AddContact() {
 
     return (
         <Container>
-            <BackButton onClick={() => navigate("/contacts")}>
+            <BackButton onClick={() => navigate(-1)}>
                 <FaArrowLeft />
             </BackButton>
 
             <Title>Adicionar Contato</Title>
             <FormRoot form={form} onSubmit={form.handleSubmit(handleSubmit)}>
-                <Input type="text" name='nickname' />
+                <ContainerInput>
+                    <Input type="text" name='nickname' floatingLabel='Nome' />
 
-                <Input type="tel" name='number' mask='phone' />
+                    <Input type="tel" name='phone' mask='phone' floatingLabel='Telefone' />
 
-                <SubmitButton>{loading ? <Loader /> : "Adicionar Contato"}</SubmitButton>
+                    <SubmitButton>{loading ? <Loader /> : "Adicionar Contato"}</SubmitButton>
+                </ContainerInput>
             </FormRoot>
         </Container>
     );

@@ -10,6 +10,14 @@ export const Container = styled.div`
   padding: 20px;
 `;
 
+export const ContainerInput = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: clamp(100px, 100%, 400px);
+`;
+
 export const Title = styled.h1`
   color: ${({ theme }) => theme.colors.primary};
   text-align: center;

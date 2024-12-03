@@ -41,7 +41,7 @@ export const appRoutes = createBrowserRouter([
     element: <Contacts />,
   },
   {
-    path: "/add-contact/:?id",
+    path: "/add-contact",
     element: <AddContact />,
   },
   {
