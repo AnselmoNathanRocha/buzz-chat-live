@@ -24,14 +24,14 @@ export const authRoutes = createBrowserRouter([
   {
     path: "/teste",
     element: <Teste />,
-  }
+  },
+  {
+    path: "*",
+    element: <Navigate to="/login" replace />,
+  },
 ]);
 
 export const appRoutes = createBrowserRouter([
-  {
-    path: "*",
-    element: <Navigate to="/" replace />,
-  },
   {
     path: "/",
     element: <Home />,
@@ -51,5 +51,9 @@ export const appRoutes = createBrowserRouter([
   {
     path: '/profile/:contactId',
     element: <UserProfile />,
+  },
+  {
+    path: "*",
+    element: <Navigate to="/" replace />,
   },
 ]);
