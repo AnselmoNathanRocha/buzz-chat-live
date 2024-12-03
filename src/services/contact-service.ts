@@ -10,6 +10,10 @@ class ContactService {
   async create(data: PostContact) {
     await httpClient.post("/contact", data);
   }
+
+  async update(data: PostContact) {
+    await httpClient.put("/contact", data);
+  }
 }
 
 export const contactService = new ContactService();

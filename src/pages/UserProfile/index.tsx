@@ -49,7 +49,7 @@ export function UserProfile() {
                         <Status>Online</Status>
                     </InfoContainer>
                     <OptionsContainer>
-                        <OptionButton>
+                        <OptionButton onClick={() => navigate(`/add-contact/${chat.chatId}`)}>
                             <FaEdit /> Editar Perfil
                         </OptionButton>
                         <OptionButton>
