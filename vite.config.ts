@@ -41,7 +41,7 @@ export default defineConfig({
         name: "Buzz Chat Live",
         short_name: "BuzzChat",
         description: "",
-        theme_color: "#aadddd",
+        theme_color: "#ffffff",
         background_color: "#aadddd",
         display: "standalone",
         start_url: "/",
