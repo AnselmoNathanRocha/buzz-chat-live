@@ -3,10 +3,8 @@ self.addEventListener("push", (event) => {
     body: event.data ? event.data.text() : "Você tem uma nova mensagem!",
     icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjzPAf67wdQrlM9QBHmmzRD698sAoyom_scNdjvORD_BzIhSULE2K9MdI&s=10",
     badge: "https://example.com/badge.png",
-    tag: "notificacao-personalizada",
-    // Passando a URL do chat na propriedade data
     data: {
-      url: "https://seusite.com/chat/123", // Substitua com a URL dinâmica do chat
+      url: "https://seusite.com/chat/123",
     },
   };
 
