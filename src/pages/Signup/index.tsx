@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { FaUser, FaPhone, FaCalendarAlt, FaEnvelope, FaLock } from 'react-icons/fa';
-import { Button, Container, FormBox, LinkCustom, TextLink, Title } from '@/styles/GlobalStyles';
+import { Button, ContainerLogin, FormBox, LinkCustom, TextLink, Title } from '@/styles/GlobalStyles';
 import { userService } from '@/services/user-service';
 import { Loader } from '@/components/Loader';
 import { useAuth } from '@/context/auth';
@@ -69,7 +69,7 @@ export function Signup() {
     };
 
     return (
-        <Container>
+        <ContainerLogin>
             <FormBox>
                 <Title>Cadastro de Usuário</Title>
                 <FormRoot form={form} onSubmit={form.handleSubmit(onSubmit)}>
@@ -91,6 +91,6 @@ export function Signup() {
                     Já possui uma conta? <LinkCustom to="/login">Faça login</LinkCustom>
                 </TextLink>
             </FormBox>
-        </Container>
+        </ContainerLogin>
     );
 }

@@ -1,20 +1,22 @@
 import { useState, useEffect } from 'react';
-import { FaSearch, FaComments, FaEllipsisV } from 'react-icons/fa';
 import { ConversationItem } from '@/components/ConversationItem';
-import { OptionsMenu } from '@/components/OptionsMenu';
-import { Container, Title, SearchGroup, Button, ConversationsList, MenuButton } from '@/pages/Home/styles';
 import { useNavigate } from 'react-router-dom';
 import { chatService } from '@/services/chat-service';
 import { GetChat } from '@/models/Chat';
 import { Loader, LoaderContainer } from '@/components/Loader';
 import { theme } from '@/styles/theme';
-import { EmptyMessage } from '@/styles/GlobalStyles';
+import { Container, ConversationsList, EmptyMessage, Header, SearchBox, Title } from '@/styles/GlobalStyles';
 import { HiOutlineEmojiSad } from "react-icons/hi";
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Input } from '@/components/Forms/Input';
+import { OptionsMenu } from '@/components/OptionsMenu';
+import { useAuth } from '@/context/auth';
 import { FormRoot } from '@/components/Forms/FormRoot';
+import { Input } from '@/components/Forms/Input';
+import { FaSearch } from 'react-icons/fa';
+import { FloatingButton } from '../Contacts/styles';
+import { BiSolidMessageSquareAdd } from "react-icons/bi";
 
 const homeSchema = z.object({
     search: z.string().optional(),
@@ -28,9 +30,9 @@ export function Home() {
     });
     const search = form.watch("search");
     const [loading, setLoading] = useState<boolean>(true);
-    const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const [conversations, setConversations] = useState<GetChat[]>([]);
     const navigate = useNavigate();
+    const { logout } = useAuth();
 
     useEffect(() => {
         const fetchConversations = async () => {
@@ -55,20 +57,34 @@ export function Home() {
 
     return (
         <Container>
-            <Title>Bem-vindo ao Chat</Title>
-            <MenuButton onClick={() => setMenuOpen(prev => !prev)}>
-                <FaEllipsisV />
-            </MenuButton>
-            {menuOpen && <OptionsMenu onClose={() => setMenuOpen(false)} isOpen={menuOpen} />}
-            <SearchGroup>
+            <Header>
+                <Title>BuzzChat</Title>
+
+                <OptionsMenu options={[
+                    { label: "Novo grupo", onClick: () => console.log("Novo grupo") },
+                    { label: "Nova mensagem", onClick: () => navigate("/contacts") },
+                    { label: "Mensagens favoritas", onClick: () => console.log("Mensagens favoritas") },
+                    { label: "Configurações", onClick: () => console.log("Configurações") },
+                    { label: "Sair", onClick: () => logout() }
+                ]} />
+            </Header>
+
+            <SearchBox>
                 <FormRoot form={form}>
-                    <Input type='text' name='search' placeholder='Pesquisar conversas...' leftIcon={<FaSearch />} />
+                    <Input
+                        type='text'
+                        name='search'
+                        placeholder='Pesquisar conversas...'
+                        leftIcon={<FaSearch />}
+                        borderStyle='2px solid #E0E0E0'
+                        borderRadius='20px'
+                    />
                 </FormRoot>
-            </SearchGroup>
-            <Button onClick={() => navigate("/contacts")}>
-                <FaComments style={{ marginRight: '8px' }} />
-                Iniciar Nova Conversa
-            </Button>
+            </SearchBox>
+
+            <FloatingButton onClick={() => navigate("/contacts")}>
+                <BiSolidMessageSquareAdd size={22} />
+            </FloatingButton>
 
             {loading ? (
                 <LoaderContainer>

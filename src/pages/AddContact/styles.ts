@@ -11,11 +11,12 @@ export const Container = styled.div`
 `;
 
 export const ContainerInput = styled.div`
+  width: clamp(100px, 100%, 400px);
+  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: clamp(100px, 100%, 400px);
 `;
 
 export const Title = styled.h1`

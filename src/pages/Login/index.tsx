@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { FaEnvelope, FaLock } from 'react-icons/fa';
 import { Loader } from '@/components/Loader';
-import { Button, Container, FormBox, LinkCustom, TextLink, Title } from '@/styles/GlobalStyles';
+import { Button, ContainerLogin, FormBox, LinkCustom, TextLink, Title } from '@/styles/GlobalStyles';
 import { userService } from '@/services/user-service';
 import { useAuth } from '@/context/auth';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -49,7 +49,7 @@ export function Login() {
     };
 
     return (
-        <Container>
+        <ContainerLogin>
             <FormBox>
                 <Title>Login de Usuário</Title>
                 <FormRoot form={form} onSubmit={form.handleSubmit(onSubmit)}>
@@ -63,6 +63,6 @@ export function Login() {
                     Não tem uma conta? <LinkCustom to="/signup">Cadastre-se</LinkCustom>
                 </TextLink>
             </FormBox>
-        </Container>
+        </ContainerLogin>
     );
 }

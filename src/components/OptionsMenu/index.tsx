@@ -1,80 +1,49 @@
-import { useAuth } from '@/context/auth';
-import React, { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
+import { useEffect, useRef, useState } from 'react';
+import { ButtonOpen, ContainerOptions, MenuContainer, MenuItem } from './styles';
+import { IoMdMore } from "react-icons/io";
 
-const MenuContainer = styled.div<{ $isOpen: boolean }>`
-    width: 200px;   
-    position: absolute;
-    top: 30px;
-    right: 35px;
-    background: ${({ theme }) => theme.colors.primary};
-    border: 1px solid ${({ theme }) => theme.colors.borderColor};
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
-    transition: 0.3s ease-in-out;
-`;
-
-const MenuItem = styled.button`
-    width: 100%;
-    height: 35px;
-    font-size: 15px;
-    font-weight: 500;
-    display: flex;
-    padding: 10px;
-    border: none;
-    background: transparent;
-    color: ${({ theme }) => theme.colors.textSecondary};
-    text-align: left;
-    cursor: pointer;
-
-    &:hover {
-        background-color: ${({ theme }) => theme.colors.secondary};
-    }
-`;
-
-interface OptionsMenuProps {
-    onClose: () => void;
-    isOpen: boolean;
+interface MenuOption {
+    label: string;
+    onClick: () => void;
 }
 
-export const OptionsMenu: React.FC<OptionsMenuProps> = ({ onClose, isOpen }) => {
+interface Props {
+    options: MenuOption[];
+}
+
+export function OptionsMenu({ options }: Props) {
     const menuRef = useRef<HTMLDivElement>(null);
-    const navigate = useNavigate();
-    const { logout } = useAuth();
+    const [modalOpen, setModalOpen] = useState<boolean>(false);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-                onClose();
+                setModalOpen(false);
             }
         };
 
-        document.addEventListener('mousedown', handleClickOutside);
+        if (modalOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [onClose]);
+    }, [modalOpen]);
 
     return (
-        <MenuContainer ref={menuRef} $isOpen={isOpen}>
-            <MenuItem onClick={() => { console.log('Navegar para Chat em Grupo'); onClose(); }}>
-                Novo grupo
-            </MenuItem>
-            <MenuItem onClick={() => { console.log('Navegar para Chat privado'); onClose(); navigate("/contacts"); }}>
-                Nova mensagem
-            </MenuItem>
-            <MenuItem onClick={() => { console.log('Navegar para Favoritos'); onClose(); }}>
-                Mensagens favoritas
-            </MenuItem>
-            <MenuItem onClick={() => { console.log('Navegar para Configurações'); onClose(); }}>
-                Configurações
-            </MenuItem>
-            <MenuItem onClick={() => logout()}>
-                Sair
-            </MenuItem>
+        <MenuContainer ref={menuRef}>
+            <ButtonOpen onClick={() => setModalOpen((prev) => !prev)}>
+                <IoMdMore />
+            </ButtonOpen>
+
+            <ContainerOptions $isOpen={modalOpen} $options={options.length}>
+                {options.map((option, index) => (
+                    <MenuItem key={index} onClick={() => { option.onClick(); setModalOpen(false); }}>
+                        {option.label}
+                    </MenuItem>
+                ))}
+            </ContainerOptions>
         </MenuContainer>
     );
-};
+}

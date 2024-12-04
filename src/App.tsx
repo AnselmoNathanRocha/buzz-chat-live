@@ -9,6 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { ContainerApp, GlobalStyles } from "./styles/GlobalStyles";
 import { AppProvider } from "./context";
 import { verifyTokenService } from "./services/verifyToken-service";
+// import { verifyTokenService } from "./services/verifyToken-service";
 
 dayjs.locale("pt-br");
 dayjs.extend(utc);
@@ -25,6 +26,8 @@ export function App() {
         if (response?.message === "Token válido.") {
           setLogged(true);
         }
+
+        // setLogged(true);
       } catch (error) {
         console.error("Token inválido ou expirado", error);
         setLogged(false);

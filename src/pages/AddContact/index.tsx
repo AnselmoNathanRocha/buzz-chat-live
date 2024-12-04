@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Container, Title, SubmitButton, ContainerInput } from '@/pages/AddContact/styles';
 import { contactService } from '@/services/contact-service';
 import { Loader } from '@/components/Loader';
-import { BackButton } from '@/styles/GlobalStyles';
+import { ButtonBack, Container, Header, Span, Title } from '@/styles/GlobalStyles';
 import { FaArrowLeft } from 'react-icons/fa';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -11,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/Forms/Input';
 import { FormRoot } from '@/components/Forms/FormRoot';
 import { keepOnlyNumbers } from '@/utils';
+import { ContainerInput, SubmitButton } from './styles';
 
 const contactSchema = z.object({
     nickname: z.string().min(1, "Campo obrigatório"),
@@ -33,9 +33,10 @@ export function AddContact() {
         try {
             setLoading(true);
 
-            if (defaultValues) {
+            if (defaultValues.nickname !== "") {
                 await contactService.update(data);
             } else {
+                console.log("Data: ", data);
                 await contactService.create(data);
             }
             navigate(-1);
@@ -48,11 +49,15 @@ export function AddContact() {
 
     return (
         <Container>
-            <BackButton onClick={() => navigate(-1)}>
-                <FaArrowLeft />
-            </BackButton>
+            <Header $background='#F5F7FA' $borderHide >
+                <ButtonBack onClick={() => navigate(-1)}>
+                    <FaArrowLeft color='#4A90E2' />
+                </ButtonBack>
 
-            <Title>Adicionar Contato</Title>
+                <Title $color='#4A90E2'>Adicionar Contato</Title>
+                <Span />
+            </Header>
+            
             <FormRoot form={form} onSubmit={form.handleSubmit(handleSubmit)}>
                 <ContainerInput>
                     <Input type="text" name='nickname' floatingLabel='Nome' />

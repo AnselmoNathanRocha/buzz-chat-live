@@ -10,10 +10,13 @@ export const FloatingLabelStyle = styled.div`
   cursor: text;
 `;
 
-export const InputText = styled.input<{ $hasIcone: boolean }>`
+export const InputText = styled.input<{
+  $hasIcone: boolean;
+  $borderStyle?: string;
+  $borderRadius?: string;
+}>`
   width: 100%;
   height: 40px;
-  border-radius: 4px;
   padding: 8px 12px 8px ${(props) => (props.$hasIcone ? "40px" : "12px")};
   font-size: 16px;
   font-weight: 400;
@@ -21,12 +24,21 @@ export const InputText = styled.input<{ $hasIcone: boolean }>`
   color: ${({ theme }) => theme.colors.textPrimary};
   background-color: transparent;
 
+  border: ${(props) =>
+    props.$borderStyle
+      ? props.$borderStyle
+      : `1px solid ${props.theme.colors.borderColorBlack}`};
+  border-radius: ${(props) =>
+    props.$borderRadius ? props.$borderRadius : "4px"};
+
   &:disabled {
     background-color: #00000022;
   }
 
-  &:not(:placeholder-shown) + ${FloatingLabelStyle},
-  &:focus + ${FloatingLabelStyle} {
+  &:not(:placeholder-shown)
+    + ${FloatingLabelStyle},
+    &:focus
+    + ${FloatingLabelStyle} {
     left: 20px;
     top: 0;
     font-size: 13px;
@@ -54,7 +66,11 @@ export const Label = styled.label`
   line-height: 16.42px;
 `;
 
-export const InputBox = styled.div<{ $color?: string; $borderColor?: string }>`
+export const InputBox = styled.div<{
+  $color?: string;
+  $borderStyle?: string;
+  $borderRadius?: string;
+}>`
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -66,16 +82,16 @@ export const InputBox = styled.div<{ $color?: string; $borderColor?: string }>`
   &[data-invalid="true"] ${InputText} {
     border-color: #ff7777;
   }
-  ${Label} {
-    color: ${(props) =>
-      props.$borderColor ? props.$borderColor : props.theme.colors.primary};
-  }
+
   ${InputText} {
-    border: 1px solid
-      ${(props) =>
-        props.$borderColor
-          ? props.$borderColor
-          : props.theme.colors.borderColorBlack};
+    border: ${(props) =>
+      props.$borderStyle
+        ? props.$borderStyle
+        : `1px solid ${props.theme.colors.borderColorBlack}`};
+    border-radius: ${(props) =>
+      props.$borderRadius
+        ? props.$borderRadius
+        : "4px"};
     color: ${(props) =>
       props.$color ? props.$color : props.theme.colors.textPrimary};
   }

@@ -63,6 +63,15 @@ export const GlobalStyles = createGlobalStyle`
 `;
 
 // Global
+export const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100vh;
+  background-color: ${({ theme }) => theme.colors.background};
+`;
+
 export const EmptyMessage = styled.div`
   width: 100%;
   margin-top: 20px;
@@ -91,21 +100,75 @@ export const BackButton = styled.button`
   }
 `;
 
-// App.ts
+// App
 export const ContainerApp = styled.div`
   width: 100%;
   height: 100%;
 `;
 
-// Login e SignUp
-export const Container = styled.div`
+// Home
+export const Header = styled.div<{
+  $background?: string;
+  $borderHide?: boolean;
+}>`
+  width: 100%;
+  height: 80px;
+  padding: 20px 10px 40px;
+  background-color: ${(props) =>
+    props.$background ? props.$background : props.theme.colors.primary};
+  box-shadow: ${(props) =>
+    props.$borderHide ? "none" : "0 5px 20px 5px #00000033"};
+
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const ContainerFirst = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+`;
+
+export const ButtonBack = styled.button`
+  font-size: 20px;
+  color: ${({ theme }) => theme.colors.background};
+  background-color: transparent;
+`;
+
+export const Title = styled.p<{ $color?: string }>`
+  font-size: 24px;
+  font-weight: 600;
+  color: ${(props) =>
+    props.$color ? props.$color : props.theme.colors.background};
+`;
+
+export const SearchBox = styled.div`
+  width: 100%;
+  padding: 15px 20px 10px;
+`;
+
+export const ConversationsList = styled.ul`
+  width: 100%;
+  padding: 0 20px;
+  list-style: none;
+  overflow: hidden;
+`;
+
+export const Span = styled.span`
+  width: 10px;
+  background-color: transparent;
+`;
+
+// Login e SignUp
+export const ContainerLogin = styled.div`
+  width: 100%;
+  height: 100vh;
+  display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
   background-color: ${({ theme }) => theme.colors.background};
-  padding: 20px;
 `;
 
 export const FormBox = styled.div`
@@ -117,7 +180,7 @@ export const FormBox = styled.div`
   max-width: 400px;
 `;
 
-export const Title = styled.h1`
+export const TitleP = styled.h1`
   color: ${({ theme }) => theme.colors.primary};
   text-align: center;
   margin-bottom: 30px;

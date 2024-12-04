@@ -2,7 +2,15 @@ import { InputHTMLAttributes, ReactNode, useCallback, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { ErrorMessage } from "../ErrorMessage";
 import { RightIcon } from "../InputPass/styles";
-import { ContentInput, FadeInput, InputBox, InputText, Label, FloatingLabelStyle, LeftIcon } from "./styles";
+import {
+  ContentInput,
+  FadeInput,
+  InputBox,
+  InputText,
+  Label,
+  FloatingLabelStyle,
+  LeftIcon,
+} from "./styles";
 import { MaskType, masks } from "@/utils/masks";
 
 export interface InputProps
@@ -18,7 +26,8 @@ export interface InputProps
   showErrorMessage?: boolean;
   errorMessage?: string;
   color?: string;
-  borderColor?: string;
+  borderStyle?: string;
+  borderRadius?: string;
   colorIcon?: string;
 }
 
@@ -34,7 +43,8 @@ export function Input({
   errorMessage,
   placeholder,
   color,
-  borderColor,
+  borderStyle,
+  borderRadius,
   colorIcon,
   disabled,
   ...props
@@ -75,7 +85,8 @@ export function Input({
     <InputBox
       data-invalid={!!fieldError}
       $color={color}
-      $borderColor={borderColor}
+      $borderStyle={borderStyle}
+      $borderRadius={borderRadius}
     >
       <Label htmlFor={id ?? name}>{props.label}</Label>
 
@@ -88,6 +99,8 @@ export function Input({
           onInput={handleInputMask}
           disabled={disabled}
           $hasIcone={!!leftIcon}
+          $borderStyle={borderStyle}
+          $borderRadius={borderRadius}
           {...register(name, {
             valueAsNumber: props.type === "number" ? true : undefined,
           })}
@@ -96,9 +109,7 @@ export function Input({
           placeholder={placeholder ? placeholder : ""}
         />
 
-        <FloatingLabelStyle>
-          {floatingLabel}
-        </FloatingLabelStyle>
+        <FloatingLabelStyle>{floatingLabel}</FloatingLabelStyle>
 
         {rightIcon && <RightIcon $colorIcon={colorIcon}>{rightIcon}</RightIcon>}
       </ContentInput>
